@@ -20,7 +20,7 @@ void XMLLoader::setFile(const QString &filename)
     if (filename.isEmpty())
         throw std::runtime_error("File isn't specified!");
 
-    if (QFile::exists(m_filename))
+    if (!QFile::exists(filename))
         throw std::runtime_error("File not found!");
 
     m_filename = filename;
@@ -31,17 +31,17 @@ void XMLLoader::parse()
 {
     using vector = std::vector<std::pair<double, double>>;
 
-    if (!m_file.open(QFile::ReadOnly))
-    {
-        std::cerr << "Failed while opening file!\n";
-        return;
-    }
-
-    parser.setDevice(&m_file);
-
     vector vec;
     std::thread t([&]
     {
+        if (!m_file.open(QFile::ReadOnly))
+        {
+            std::cerr << "Failed while opening file!\n";
+            return;
+        }
+
+        parser.setDevice(&m_file);
+
         while (!parser.atEnd())
         {
             if  (parser.isStartElement())
@@ -62,6 +62,4 @@ void XMLLoader::parse()
         }
     });
     t.detach();
-
-    m_file.close();
 }
