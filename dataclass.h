@@ -4,7 +4,6 @@
 #include <QObject>
 #include <vector>
 #include <tuple>
-#include <thread>
 
 class DataClass : public QObject
 {

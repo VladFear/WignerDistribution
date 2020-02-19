@@ -31,35 +31,32 @@ void XMLLoader::parse()
 {
     using vector = std::vector<std::pair<double, double>>;
 
-    vector vec;
-    std::thread t([&]
+    if (!m_file.open(QFile::ReadOnly))
     {
-        if (!m_file.open(QFile::ReadOnly))
-        {
-            std::cerr << "Failed while opening file!\n";
-            return;
-        }
+        std::cerr << "Failed while opening file!\n";
+        return;
+    }
 
-        parser.setDevice(&m_file);
+    vector vec;
+    parser.setDevice(&m_file);
 
-        while (!parser.atEnd())
+    while (!parser.atEnd())
+    {
+        if  (parser.isStartElement())
         {
-            if  (parser.isStartElement())
+            if (parser.name() == "radius")
             {
-                if (parser.name() == "radius")
-                {
-                    qDebug() << parser.readElementText();
-                }
-
-                if (parser.name() == "iteration")
-                {
-                    unsigned int size = parser.readElementText().toUInt();
-                    vec.reserve(size);
-                }
+                qDebug() << parser.readElementText();
             }
 
-            parser.readNext();
+            if (parser.name() == "iteration")
+            {
+                unsigned int size = parser.readElementText().toUInt();
+                qDebug() << size;
+                vec.reserve(size);
+            }
         }
-    });
-    t.detach();
+
+        parser.readNext();
+    }
 }

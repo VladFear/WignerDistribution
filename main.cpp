@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QApplication>
 #include <iostream>
+#include <thread>
 #include <xmlloader.h>
 
 int main(int argc, char *argv[])
@@ -16,15 +17,18 @@ int main(int argc, char *argv[])
     return -1;
 
   XMLLoader loader;
+  std::thread parsing;
   try
   {
     loader.setFile("/home/vlad/Development/WignerDistribution/1-1000000.txt");
-    loader.parse();
+    parsing = std::thread(&XMLLoader::parse, &loader);
   } catch (const std::exception & e)
   {
       std::cerr << e.what() << std::endl;
       return EXIT_FAILURE;
   }
 
-  return app.exec();
+  app.exec();
+  parsing.join();
+  return EXIT_SUCCESS;
 }

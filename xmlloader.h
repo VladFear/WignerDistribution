@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <QFile>
 #include <exception>
-#include <dataclass.h>
 #include <iostream>
 
 class XMLLoader : public QObject
